@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.0.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <_ContentIncludedByDefault Remove="MiddlewareBenchmark\obj\MiddlewareBenchmark.csproj.nuget.dgspec.json"/>
+        <_ContentIncludedByDefault Remove="MiddlewareBenchmark\obj\project.assets.json"/>
+        <_ContentIncludedByDefault Remove="MiddlewareBenchmark\obj\project.packagespec.json"/>
+    </ItemGroup>
+
+</Project>
