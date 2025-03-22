@@ -19,12 +19,12 @@ public class Post200Benchmark
     private MemoryHttpContextLoggingMiddleware _memoryHttpContextLogging;
     private BalancedHttpContextLoggingMiddleware _speedHttpContextLogging;
 
-    [Params(512, 10 * 1024)] public int PayloadSize; // 0.5 KB and 10 KB payloads
+    [Params(512, 10 * 1024)] public int BodySize; // 0.5 KB and 10 KB payloads
 
     [GlobalSetup]
     public void SetupContext()
     {
-        var body = Encoding.UTF8.GetBytes(PayloadSize == 512 ? SmallString : BigString);
+        var body = Encoding.UTF8.GetBytes(BodySize == 512 ? SmallString : BigString);
 
         _httpContextLogging = new SimpleHttpContextLoggingMiddleware(ctx =>
         {
