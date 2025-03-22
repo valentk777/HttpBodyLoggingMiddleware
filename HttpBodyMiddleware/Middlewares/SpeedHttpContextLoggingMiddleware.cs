@@ -5,7 +5,7 @@ using System.Text;
 namespace HttpBodyMiddleware.Middlewares;
 
 /// <summary>
-/// NOT WORKING YET.
+///     NOT WORKING YET.
 /// </summary>
 /// <param name="next"></param>
 /// <param name="logger"></param>
@@ -36,7 +36,7 @@ public class SpeedHttpContextLoggingMiddleware(RequestDelegate next, ILogger<Spe
                 logger.BeginScope(new Dictionary<string, object>
                 {
                     { "http.request.body", requestBody },
-                    { "http.response.body", responseBody },
+                    { "http.response.body", responseBody }
                 });
                 logger.LogWarning(requestBody);
                 logger.LogWarning(responseBody);

@@ -5,26 +5,23 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace MiddlewareBenchmark;
+namespace MiddlewareBenchmark.Benchmarks;
 
 [MemoryDiagnoser]
 [ShortRunJob]
-public class MiddlewareBenchmark
+public class AllInOneBenchmark
 {
-    private HttpContextLoggingMiddleware _httpContextLogging;
-    private MemoryHttpContextLoggingMiddleware _memoryHttpContextLogging;
-    private SpeedHttpContextLoggingMiddleware _speedHttpContextLogging;
+    private readonly string BigString = new('a', 10240);
+    private readonly string SmallString = new('a', 512);
+
     private DefaultHttpContext _context;
+    private SimpleHttpContextLoggingMiddleware _httpContextLogging;
+    private MemoryHttpContextLoggingMiddleware _memoryHttpContextLogging;
+    private BalancedHttpContextLoggingMiddleware _speedHttpContextLogging;
 
-    private string SmallString = new string('a', 512);
-    private string BigString = new string('a', 10240);
-    
     [Params(512, 10 * 1024)] public int PayloadSize; // 0.5 KB and 10 KB payloads
-
     [Params(200, 500)] public int StatusCode;
-
     [ParamsAllValues] public bool WithRequestBody;
-
     [ParamsAllValues] public bool WithResponseBody;
 
     [GlobalSetup]
@@ -32,11 +29,11 @@ public class MiddlewareBenchmark
     {
         var body = Encoding.UTF8.GetBytes(PayloadSize == 512 ? SmallString : BigString);
 
-        _httpContextLogging = new HttpContextLoggingMiddleware(ctx =>
+        _httpContextLogging = new SimpleHttpContextLoggingMiddleware(ctx =>
         {
             ctx.Response.StatusCode = StatusCode;
             return Task.CompletedTask;
-        }, new Mock<ILogger<HttpContextLoggingMiddleware>>().Object);
+        }, new Mock<ILogger<SimpleHttpContextLoggingMiddleware>>().Object);
 
         _memoryHttpContextLogging = new MemoryHttpContextLoggingMiddleware(ctx =>
         {
@@ -44,11 +41,11 @@ public class MiddlewareBenchmark
             return Task.CompletedTask;
         }, new Mock<ILogger<MemoryHttpContextLoggingMiddleware>>().Object);
 
-        _speedHttpContextLogging = new SpeedHttpContextLoggingMiddleware(ctx =>
+        _speedHttpContextLogging = new BalancedHttpContextLoggingMiddleware(ctx =>
         {
             ctx.Response.StatusCode = StatusCode;
             return Task.CompletedTask;
-        }, new Mock<ILogger<SpeedHttpContextLoggingMiddleware>>().Object);
+        }, new Mock<ILogger<BalancedHttpContextLoggingMiddleware>>().Object);
 
         _context = new DefaultHttpContext
         {
@@ -64,7 +61,6 @@ public class MiddlewareBenchmark
             }
         };
 
-
         if (!WithResponseBody)
             return;
 
@@ -73,11 +69,20 @@ public class MiddlewareBenchmark
     }
 
     [Benchmark(Baseline = true)]
-    public async Task HttpContextLoggingMiddleware() => await _httpContextLogging.Invoke(_context);
+    public async Task SimpleHttpContextLoggingMiddleware()
+    {
+        await _httpContextLogging.Invoke(_context);
+    }
 
     [Benchmark]
-    public async Task MemoryHttpContextLoggingMiddleware() => await _memoryHttpContextLogging.Invoke(_context);
+    public async Task MemoryHttpContextLoggingMiddleware()
+    {
+        await _memoryHttpContextLogging.Invoke(_context);
+    }
 
-    // [Benchmark]
-    // public async Task SpeedHttpContextLoggingMiddleware() => await _speedHttpContextLogging.Invoke(_context);
+    [Benchmark]
+    public async Task BalancedHttpContextLoggingMiddleware()
+    {
+        await _speedHttpContextLogging.Invoke(_context);
+    }
 }

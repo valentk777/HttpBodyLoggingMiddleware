@@ -4,6 +4,17 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MiddlewareBenchmark", "Midd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpBodyMiddleware", "HttpBodyMiddleware\HttpBodyMiddleware.csproj", "{3B55A94C-2B33-4B73-A571-87D0F122C8B0}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Source", "Source", "{8FD55E52-7E48-44EF-B25F-31C38281AE28}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{729D8637-4BD8-4697-A537-884AB7D0807B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{77C48F0F-4A5D-46CB-BA1A-787CA000B2C6}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		.gitignore = .gitignore
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +29,9 @@ Global
 		{3B55A94C-2B33-4B73-A571-87D0F122C8B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3B55A94C-2B33-4B73-A571-87D0F122C8B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3B55A94C-2B33-4B73-A571-87D0F122C8B0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3B55A94C-2B33-4B73-A571-87D0F122C8B0} = {8FD55E52-7E48-44EF-B25F-31C38281AE28}
+		{2CA0D09F-C1C0-4285-94DF-577BA63C1B3A} = {729D8637-4BD8-4697-A537-884AB7D0807B}
 	EndGlobalSection
 EndGlobal

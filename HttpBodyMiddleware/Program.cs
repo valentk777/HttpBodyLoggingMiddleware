@@ -43,18 +43,15 @@ app.MapPost("/post-ok", (WeatherForecast body) =>
         return forecast;
     })
     .WithName("post-ok");
-app.MapPost("/post-error", (WeatherForecast body) =>
-    {
-        throw new NotImplementedException();
-    })
+app.MapPost("/post-error", (WeatherForecast body) => { throw new NotImplementedException(); })
     .WithName("post-error");
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// app.UseMiddleware<HttpContextLoggingMiddleware>();
+// app.UseMiddleware<SimpleHttpContextLoggingMiddleware>();
 // app.UseMiddleware<MemoryHttpContextLoggingMiddleware>();
-app.UseMiddleware<SpeedHttpContextLoggingMiddleware>();
+app.UseMiddleware<BalancedHttpContextLoggingMiddleware>();
 
 app.Run();
 

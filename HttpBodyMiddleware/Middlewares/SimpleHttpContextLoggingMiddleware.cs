@@ -2,12 +2,14 @@
 
 namespace HttpBodyMiddleware.Middlewares;
 
-public class HttpContextLoggingMiddleware(RequestDelegate next, ILogger<HttpContextLoggingMiddleware> logger)
+public class SimpleHttpContextLoggingMiddleware(
+    RequestDelegate next,
+    ILogger<SimpleHttpContextLoggingMiddleware> logger)
 {
     public async Task Invoke(HttpContext context)
     {
         context.Request.EnableBuffering();
-        var requestBody = await ReadRequestBody(context.Request);
+        var requestBody = await ReadRequestBody(context.Request).ConfigureAwait(false);
 
         var originalBodyStream = context.Response.Body;
         using var responseBodyStream = new MemoryStream();
@@ -15,14 +17,15 @@ public class HttpContextLoggingMiddleware(RequestDelegate next, ILogger<HttpCont
 
         try
         {
-            await next(context);
+            await next(context).ConfigureAwait(false);
         }
         finally
         {
             if (context.Response.StatusCode >= 400)
             {
                 responseBodyStream.Seek(0, SeekOrigin.Begin);
-                var responseBody = await new StreamReader(responseBodyStream, Encoding.UTF8).ReadToEndAsync();
+                var responseBody = await new StreamReader(responseBodyStream, Encoding.UTF8).ReadToEndAsync()
+                    .ConfigureAwait(false);
 
                 logger.BeginScope(new Dictionary<string, object>
                 {
@@ -34,16 +37,17 @@ public class HttpContextLoggingMiddleware(RequestDelegate next, ILogger<HttpCont
                 responseBodyStream.Seek(0, SeekOrigin.Begin);
             }
 
-            await responseBodyStream.CopyToAsync(originalBodyStream);
+            await responseBodyStream.CopyToAsync(originalBodyStream).ConfigureAwait(false);
             context.Response.Body = originalBodyStream;
         }
     }
 
+    // Note: not thread safe
     private async Task<string> ReadRequestBody(HttpRequest request)
     {
         request.Body.Position = 0;
         using var reader = new StreamReader(request.Body, Encoding.UTF8, leaveOpen: true);
-        var body = await reader.ReadToEndAsync();
+        var body = await reader.ReadToEndAsync().ConfigureAwait(false);
         request.Body.Position = 0;
         return body;
     }
