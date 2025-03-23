@@ -8,7 +8,6 @@ using Moq;
 namespace MiddlewareBenchmark.Benchmarks;
 
 [MemoryDiagnoser]
-[ShortRunJob]
 public class Post200Benchmark
 {
     private readonly string BigString = new('a', 10240);
